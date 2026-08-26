@@ -1,180 +1,35 @@
 <!doctype html>
 <html lang="zh-CN">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0b1020">
-<title>泳池 RPG</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Swim RPG</title>
 <style>
-:root{--bg:#09101d;--card:#121b2b;--card2:#172238;--text:#eef4ff;--muted:#91a0b8;--accent:#55c7ff;--accent2:#8e7dff;--good:#54d58a;--line:#26344d}
-*{box-sizing:border-box}body{margin:0;background:linear-gradient(160deg,#08101c,#10182a 55%,#0b1220);color:var(--text);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans SC",sans-serif}
-main{max-width:760px;margin:auto;padding:18px 16px 40px}.hero{padding:14px 4px 8px}.eyebrow{color:var(--accent);font-size:13px;font-weight:700;letter-spacing:.08em}.title{font-size:34px;font-weight:850;margin:4px 0}.sub{color:var(--muted);line-height:1.5}
-.card{background:rgba(18,27,43,.92);border:1px solid var(--line);border-radius:20px;padding:18px;margin:12px 0;box-shadow:0 10px 30px rgba(0,0,0,.16)}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.stat{background:var(--card2);border-radius:15px;padding:14px}.num{font-size:25px;font-weight:800}.label{font-size:12px;color:var(--muted);margin-top:3px}
-.xpbar{height:10px;background:#26344d;border-radius:99px;overflow:hidden;margin:9px 0}.xpfill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));width:0%}
-.row{display:flex;justify-content:space-between;align-items:center;gap:10px}.pill{display:inline-block;padding:5px 9px;border-radius:99px;background:#21304a;color:#b9dfff;font-size:12px}
-h2{font-size:19px;margin:0 0 12px}h3{font-size:15px;margin:0 0 8px}
-button{border:0;border-radius:13px;padding:11px 14px;background:var(--accent);color:#06101a;font-weight:800;font-size:14px;cursor:pointer}button.secondary{background:#24324b;color:var(--text)}button.ghost{background:transparent;color:var(--muted);border:1px solid var(--line)}
-.actions{display:flex;gap:8px;flex-wrap:wrap}.mission{border:1px solid #35506c;background:linear-gradient(135deg,#172b42,#1b223b);border-radius:16px;padding:16px}.mission .big{font-size:20px;font-weight:800;line-height:1.35}.mission p{color:#aebbd0;margin:8px 0 0;line-height:1.5}
-form{display:grid;grid-template-columns:1fr 1fr;gap:10px}label{font-size:12px;color:var(--muted);display:block;margin-bottom:5px}input,select{width:100%;background:#0d1626;color:var(--text);border:1px solid var(--line);border-radius:11px;padding:11px;font-size:15px} .full{grid-column:1/-1}
-.log{border-top:1px solid var(--line);padding:12px 0}.log:first-child{border-top:0}.logmeta{color:var(--muted);font-size:12px}.tag{font-size:12px;color:var(--good)}
-.ach{display:flex;align-items:center;gap:11px;padding:10px 0;border-bottom:1px solid var(--line)}.ach:last-child{border-bottom:0}.badge{width:38px;height:38px;border-radius:12px;background:#26344d;display:grid;place-items:center;font-size:20px}.locked{opacity:.4}
-.small{font-size:12px;color:var(--muted);line-height:1.5}.danger{color:#ff9c9c}
-@media(max-width:520px){form{grid-template-columns:1fr}.full{grid-column:auto}.grid{grid-template-columns:1fr 1fr}.title{font-size:30px}}
-</style>
-</head>
-<body>
-<main>
-  <section class="hero">
-    <div class="eyebrow">SWIM POOL RPG · v1</div>
-    <div class="title">🏊 泳池冒险者</div>
-    <div class="sub">把“游泳很无聊”改造成一场 30–40 分钟的小型任务。<br>不要求连续游，不追求每次都更快。</div>
-  </section>
-
-  <section class="card">
-    <div class="row"><div><span class="pill" id="levelPill">Lv.1 新手</span></div><div class="small" id="xpText">0 XP</div></div>
-    <div class="xpbar"><div class="xpfill" id="xpFill"></div></div>
-    <div class="small" id="nextText">距离下一级还差 100 XP</div>
-  </section>
-
-  <section class="card">
-    <h2>🎯 今日任务</h2>
-    <div class="mission">
-      <div class="big" id="missionTitle">点击“抽取任务”开始</div>
-      <p id="missionDesc">每次只给自己一个小目标。完成它就算赢。</p>
-    </div>
-    <div class="actions" style="margin-top:10px">
-      <button onclick="newMission()">🎲 抽取任务</button>
-      <button class="secondary" onclick="missionDone()">✓ 完成任务 + XP</button>
-    </div>
-  </section>
-
-  <section class="card">
-    <h2>📈 冒险者属性</h2>
-    <div class="grid">
-      <div class="stat"><div class="num" id="totalDist">0 m</div><div class="label">累计距离</div></div>
-      <div class="stat"><div class="num" id="sessions">0</div><div class="label">游泳次数</div></div>
-      <div class="stat"><div class="num" id="best100">—</div><div class="label">最佳 100m 配速</div></div>
-      <div class="stat"><div class="num" id="longest">0 m</div><div class="label">单次最长距离</div></div>
-    </div>
-  </section>
-
-  <section class="card">
-    <h2>📝 记录一次游泳</h2>
-    <form onsubmit="saveSwim(event)">
-      <div><label>日期</label><input id="date" type="date"></div>
-      <div><label>距离（m）</label><input id="dist" type="number" min="0" step="25" placeholder="例如 1200" required></div>
-      <div><label>有效游泳时间（分钟）</label><input id="mins" type="number" min="1" step="1" placeholder="例如 38" required></div>
-      <div><label>最佳 100m（可选）</label><input id="best" type="number" min="30" step="1" placeholder="秒，例如 165"></div>
-      <div><label>本次类型</label>
-        <select id="type"><option>轻松游</option><option>技术训练</option><option>速度挑战</option><option>混合训练</option></select>
-      </div>
-      <div><label>主泳姿</label><select id="stroke"><option>蛙泳</option><option>自由泳</option><option>混合</option></select></div>
-      <div class="full"><label>一句话感受（可选）</label><input id="note" maxlength="80" placeholder="例如：今天状态很好，50m 快慢交替很有意思"></div>
-      <div class="full"><button type="submit">保存记录 · 获得 XP</button></div>
-    </form>
-  </section>
-
-  <section class="card">
-    <h2>🏆 成就</h2>
-    <div id="achievements"></div>
-  </section>
-
-  <section class="card">
-    <div class="row"><h2 style="margin:0">📚 最近记录</h2><button class="ghost" onclick="clearData()">清空数据</button></div>
-    <div id="logs"></div>
-  </section>
-
-  <section class="card">
-    <div class="small">
-      <b>建议玩法：</b>一次 30–40 分钟就够。把训练拆成 50m/100m 小任务，允许休息；你的目标不是“忍住无聊”，而是让下一项任务值得期待。
-      <br><br>数据只保存在这个浏览器的本地存储中，不会上传。
-    </div>
-  </section>
-</main>
-
+:root{--bg:#eef7f8;--card:#fff;--text:#18323a;--muted:#70878d;--p:#168fa5;--p2:#67c9d2;--line:#dcebed;--gold:#e8a62b;--green:#39a96b;--danger:#d65b5b}*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#e8f6f8,#f7fbfb 45%,#eef7f8);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;color:var(--text)}button,input,select,textarea{font:inherit}button{cursor:pointer}.app{max-width:760px;margin:auto;padding:28px 18px 50px}header{text-align:center;margin-bottom:20px}.logo{font-size:42px}h1{margin:4px 0;font-size:30px}.subtitle,.small{color:var(--muted);font-size:13px}.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:20px;margin:14px 0;box-shadow:0 8px 24px rgba(25,85,95,.09)}.section-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:15px}.section-title h2{font-size:20px;margin:0}.level-row{display:flex;align-items:center;gap:14px}.avatar{width:72px;height:72px;border-radius:20px;background:#e2f4f5;display:grid;place-items:center;font-size:42px}.level-info{flex:1}.level-line{display:flex;justify-content:space-between;font-weight:700;margin-bottom:7px}.progress{height:10px;background:#e5eff0;border-radius:99px;overflow:hidden}.progress>div{height:100%;background:linear-gradient(90deg,var(--p),var(--p2));transition:width .35s}.task{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--line)}.task:last-child{border:0}.check{width:25px;height:25px;border:2px solid #b9ced1;border-radius:8px;background:#fff;display:grid;place-items:center}.task.done .check{background:var(--green);border-color:var(--green);color:#fff}.task.done .task-name{text-decoration:line-through;color:#8ca0a4}.task-main{flex:1}.task-name{font-weight:650}.task-meta{font-size:12px;color:var(--muted);margin-top:3px}.xp{font-size:12px;color:var(--gold);font-weight:700}.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:0;border-radius:11px;padding:10px 14px;background:#e8f4f5;color:var(--text);font-weight:650}.btn.primary{background:var(--p);color:#fff}.btn.gold{background:#fff2d7;color:#8a5b00}.btn.danger{background:#fce9e9;color:#a33d3d}.record-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:5px}.field input,.field textarea{width:100%;padding:11px;border:1px solid var(--line);border-radius:10px;outline:0;background:#fbfefe;color:var(--text)}.field textarea{min-height:80px;resize:vertical}.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.stat{background:#f5fafb;border-radius:14px;padding:13px;text-align:center}.stat b{display:block;font-size:21px;margin-bottom:3px}.achievement{display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}.achievement:last-child{border:0}.ach-icon{width:42px;height:42px;border-radius:12px;background:#fff3d8;display:grid;place-items:center;font-size:22px}.locked{filter:grayscale(1);opacity:.45}.character-preview{display:flex;align-items:center;gap:14px;padding:12px 14px;margin-bottom:14px;background:#f5fafb;border-radius:16px;border:1px solid var(--line)}.character-avatar{width:72px;height:72px;border-radius:18px;background:#e2f4f5;display:grid;place-items:center;font-size:48px}.equipment{display:flex;gap:9px;flex-wrap:wrap}.item{padding:9px 11px;border-radius:12px;background:#f3f8f8;border:1px solid var(--line);font-size:13px}.item.unlocked{background:#fff4d9;border-color:#f1d38d}.notice{padding:12px 14px;border-radius:12px;background:#e9f7ee;color:#28734b;margin-top:12px;font-size:13px}.footer{text-align:center;color:var(--muted);font-size:12px;margin-top:24px}.modal{position:fixed;inset:0;background:rgba(12,39,45,.42);display:none;align-items:center;justify-content:center;padding:18px;z-index:10}.modal.show{display:flex}.modal-box{background:#fff;border-radius:20px;max-width:600px;width:100%;max-height:90vh;overflow:auto;padding:20px}.task-editor{display:grid;grid-template-columns:1fr 100px 40px;gap:8px;align-items:center;margin:8px 0}.task-editor input{padding:9px;border:1px solid var(--line);border-radius:9px}.icon-btn{width:38px;height:38px;border:0;border-radius:9px;background:#fce9e9;color:#a33d3d}@media(max-width:560px){.app{padding:20px 12px 40px}.record-grid{grid-template-columns:1fr 1fr}.stat-grid{grid-template-columns:1fr 1fr}.avatar{width:60px;height:60px;font-size:34px}}
+</style></head><body><div class="app">
+<header><div class="logo">🏊</div><h1>SWIM RPG</h1><div class="subtitle">让每一次下水，都算一次冒险</div></header>
+<section class="card"><div class="level-row"><div class="avatar" id="avatar">🧑</div><div class="level-info"><div class="level-line"><span>Lv.<span id="level">1</span> 冒险者</span><span id="xpText">0 / 100 XP</span></div><div class="progress"><div id="xpBar" style="width:0%"></div></div><div class="small" id="nextReward" style="margin-top:7px"></div></div></div></section>
+<section class="card"><div class="section-title"><h2>🎯 今日任务</h2><div class="actions"><button class="btn" id="editTasksBtn">⚙️ 任务池</button><button class="btn" id="rerollBtn">🎲 重新抽取</button></div></div><div id="tasks"></div><div class="small" id="taskSummary"></div></section>
+<section class="card"><div class="section-title"><h2>🏊 记录一次游泳</h2><span class="small">数据可手动填写</span></div><div class="record-grid"><div class="field"><label>距离（米）</label><input id="distance" type="number" min="0" placeholder="例如 1200"></div><div class="field"><label>有效时间（分钟）</label><input id="duration" type="number" min="0" step="0.1" placeholder="例如 40"></div><div class="field"><label>SWOLF</label><input id="swolf" type="number" min="0" placeholder="例如 78"></div><div class="field"><label>最快100m（可选）</label><input id="pace" placeholder="例如 4'16\""></div></div><div class="actions" style="margin-top:12px"><button class="btn primary" id="saveRecord">保存本次记录</button></div><div id="recordNotice"></div></section>
+<section class="card"><div class="section-title"><h2>🏆 我的成就</h2><span class="small" id="achCount"></span></div><div id="achievements"></div></section>
+<section class="card"><div class="section-title"><h2>📊 我的纪录</h2><span class="small">自动更新</span></div><div class="stat-grid"><div class="stat"><b id="bestSwolf">—</b><span class="small">最佳 SWOLF</span></div><div class="stat"><b id="bestDistance">—</b><span class="small">最长距离</span></div><div class="stat"><b id="bestPace">—</b><span class="small">最快100m</span></div></div><div class="small" style="margin-top:10px">共记录 <b id="recordCount">0</b> 次游泳</div></section>
+<section class="card"><div class="section-title"><h2>✨ 今日探索</h2><span class="small">学到、尝试到，都算成长</span></div><div class="field"><label>今天学到了什么 / 尝试了什么？</label><textarea id="exploreText" placeholder="例如：第一次练习自由泳换气……"></textarea></div><div class="actions" style="margin-top:10px"><button class="btn gold" id="saveExplore">记录探索 +30 XP</button></div><div id="exploreNotice"></div></section>
+<section class="card"><div class="section-title"><h2>👤 我的装备</h2><span class="small">升级解锁</span></div><div class="character-preview"><div class="character-avatar" id="characterAvatar">🧑</div><div><b>冒险者</b><div class="small">这里先用 emoji 作为角色预览，之后可以换成你自己的形象。</div></div></div><div class="equipment" id="equipment"></div></section><div class="footer">数据只保存在当前浏览器，不会上传到服务器。</div></div>
+<div class="modal" id="taskModal"><div class="modal-box"><div class="section-title"><h2>⚙️ 编辑任务池</h2><button class="btn" id="closeModal">关闭</button></div><p class="small">每次重新抽取会随机选择3个任务。你也可以把它改成自己的活动。</p><div id="taskEditor"></div><div class="actions" style="margin-top:12px"><button class="btn" id="addTask">＋ 添加任务</button><button class="btn primary" id="saveTasks">保存任务池</button></div></div></div>
 <script>
-const KEY="swim_rpg_v1";
-let state=JSON.parse(localStorage.getItem(KEY)||'{"xp":0,"missionDone":0,"logs":[]}');
-const missions=[
-["🎯 配速侦察员","4 × 100m：尽量让每个 100m 的感觉接近，不追求最快。",25],
-["🦵 蹬腿实验室","连续 4 × 50m，专注“蹬腿后伸直滑行”。每趟找一个不同的滑行感觉。",25],
-["⚡ 小型冲刺","6 × 50m：奇数趟快一点，偶数趟轻松恢复。",30],
-["🫧 节奏大师","8 × 25m：每趟只专注一个完整的“收手—收腿—前伸—蹬腿—滑行”循环。",25],
-["🧭 距离猎人","今天总距离比你上一次多 100m；不需要连续游。",30],
-["🧪 技术侦探","找出今天最舒服的一种蛙泳节奏，并用 200m 验证它。",25],
-["🏁 终点冲刺","最后 100m 比前面的轻松游稍快，但保持动作完整。",20],
-["🎲 混合副本","50m 轻松 + 50m 正常 + 50m 快，重复 3 轮。",30],
-["🧘 省力挑战","游 200m，目标不是更快，而是让自己感觉“同样速度更省力”。",25],
-["📊 数据猎人","今天记录一次最佳 100m 配速，并与历史最佳比较。",20]
-];
-function save(){localStorage.setItem(KEY,JSON.stringify(state));render()}
-function level(){return Math.floor(state.xp/100)+1}
-function xpIn(){return state.xp%100}
-function render(){
- document.getElementById("levelPill").textContent=`Lv.${level()} ${["新手","探索者","熟练者","挑战者","冒险家","泳池大师"][Math.min(level()-1,5)]}`;
- document.getElementById("xpText").textContent=`${state.xp} XP`;
- document.getElementById("xpFill").style.width=xpIn()+"%";
- document.getElementById("nextText").textContent=`距离下一级还差 ${100-xpIn()} XP`;
- const logs=state.logs;
- const total=logs.reduce((a,x)=>a+Number(x.dist),0);
- document.getElementById("totalDist").textContent=total.toLocaleString()+" m";
- document.getElementById("sessions").textContent=logs.length;
- document.getElementById("longest").textContent=(logs.length?Math.max(...logs.map(x=>Number(x.dist))):0).toLocaleString()+" m";
- const bs=logs.filter(x=>x.best).map(x=>Number(x.best));
- document.getElementById("best100").textContent=bs.length?fmtSec(Math.min(...bs)):"—";
- renderAchievements(); renderLogs();
-}
-function fmtSec(s){s=Number(s);return Math.floor(s/60)+":"+String(Math.round(s%60)).padStart(2,"0")}
-function newMission(){
- const m=missions[Math.floor(Math.random()*missions.length)];
- document.getElementById("missionTitle").textContent=m[0];
- document.getElementById("missionDesc").textContent=m[1];
- document.getElementById("missionTitle").dataset.xp=m[2];
-}
-function missionDone(){
- const el=document.getElementById("missionTitle");
- if(!el.dataset.xp){alert("先抽取一个任务吧！");return}
- state.xp+=Number(el.dataset.xp); state.missionDone++;
- el.textContent="✨ 任务完成！";
- document.getElementById("missionDesc").textContent=`+${el.dataset.xp} XP。可以继续游，也可以今天到此为止。`;
- delete el.dataset.xp; save();
-}
-function saveSwim(e){
- e.preventDefault();
- const d=Number(document.getElementById("dist").value), m=Number(document.getElementById("mins").value);
- const best=document.getElementById("best").value;
- const xp=Math.round(d/100)*4 + Math.min(30,Math.round(m/5));
- state.logs.unshift({date:document.getElementById("date").value,dist:d,mins:m,best:best?Number(best):null,type:document.getElementById("type").value,stroke:document.getElementById("stroke").value,note:document.getElementById("note").value});
- state.xp+=xp;
- alert(`记录成功！+${xp} XP`);
- e.target.reset(); document.getElementById("date").value=new Date().toISOString().slice(0,10); save();
-}
-function renderLogs(){
- const box=document.getElementById("logs");
- if(!state.logs.length){box.innerHTML='<div class="small">还没有记录。完成第一次游泳后回来打卡吧。</div>';return}
- box.innerHTML=state.logs.slice(0,8).map(x=>{
-   const pace=x.mins?fmtSec((x.mins*60)/(x.dist/100)):"—";
-   return `<div class="log"><div class="row"><b>${x.dist}m · ${x.stroke}</b><span class="tag">${x.type}</span></div><div class="logmeta">${x.date} · ${x.mins} min · 平均约 ${pace}/100m${x.best?` · 最佳 ${fmtSec(x.best)}/100m`:""}</div>${x.note?`<div class="small" style="margin-top:4px">${esc(x.note)}</div>`:""}</div>`
- }).join("");
-}
-function esc(s){return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
-function renderAchievements(){
- const total=state.logs.reduce((a,x)=>a+Number(x.dist),0), n=state.logs.length;
- const ach=[
- ["🌊","初次下水",n>=1,"完成第一次记录"],
- ["🏊","千米探险",total>=1000,"累计 1000m"],
- ["🐋","五公里海域",total>=5000,"累计 5000m"],
- ["🏝️","十公里岛屿",total>=10000,"累计 10000m"],
- ["📅","规律冒险者",n>=5,"完成 5 次游泳"],
- ["⚡","速度试炼",state.logs.some(x=>x.best&&x.best<150),"100m 最佳 < 2:30"],
- ["🎯","任务狂热者",state.missionDone>=5,"完成 5 个训练任务"]
- ];
- document.getElementById("achievements").innerHTML=ach.map(a=>`<div class="ach ${a[2]?"":"locked"}"><div class="badge">${a[0]}</div><div><b>${a[1]}</b><div class="small">${a[3]} ${a[2]?"· 已解锁":"· 未解锁"}</div></div></div>`).join("");
-}
-function clearData(){if(confirm("确定清空所有本地记录吗？此操作不可恢复。")){state={xp:0,missionDone:0,logs:[]};save()}}
-document.getElementById("date").value=new Date().toISOString().slice(0,10);
-render(); newMission();
-</script>
-</body>
-</html>
+const KEY='swimRPG_v2';const defaultTasks=[['游泳 ≥ 800 m',30],['完成一次技术练习',20],['尝试一个以前没做过的东西',20],['游泳 ≥ 1000 m',35],['完成 4 组分组练习',25],['认真练习一次换气 / 打腿 / 流线',25],['学习一个新的运动知识',20],['比上次多游 100 m',30],['游泳 ≥ 1200 m',40]];
+const rewards=[['🧢 新泳帽',2],['🕶️ 新泳镜',3],['👕 新上衣',4],['🩳 新泳裤',5],['✨ 特别装备',7],['🏅 传奇装备',10]];
+const defs=[['first','🌱','第一次下水','完成第一次游泳记录'],['km','🏊','千米冒险者','单次游泳达到 1000 m'],['five','🔥','熟悉的泳道','累计记录 5 次游泳'],['ten','🌊','坚持不懈','累计记录 10 次游泳'],['swolf','🧩','效率提升','刷新自己的最佳 SWOLF'],['distance','📏','再远一点','刷新自己的单次距离纪录'],['pace','⚡','越来越快','刷新自己的最快100m记录'],['explore','✨','探索者','记录 3 次今日探索']];
+let s=JSON.parse(localStorage.getItem(KEY)||'null')||{xp:0,records:[],explorations:[],tasks:defaultTasks.map(x=>({name:x[0],xp:x[1]})),activeTasks:[],unlocked:[]};
+function save(){localStorage.setItem(KEY,JSON.stringify(s))}function lv(){return Math.floor(s.xp/100)+1}function esc(x){return String(x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function sec(v){if(!v)return null;let m=String(v).match(/^(\d+)[':]\s*(\d+)\"?$/);return m?Number(m[1])*60+Number(m[2]):null}function pace(v){if(v==null)return'—';let m=Math.floor(v/60),q=Math.round(v%60);return m+"'"+String(q).padStart(2,'0')+'"'}
+function xp(n){let a=lv();s.xp+=n;if(lv()>a)setTimeout(()=>alert('🎉 升级了！\n\n你现在是 Lv.'+lv()+' 冒险者！'),30);save();render()}
+function draw(){let p=[...s.tasks],a=[];while(a.length<Math.min(3,p.length)){let i=Math.floor(Math.random()*p.length);a.push({...p.splice(i,1)[0]})}s.activeTasks=a.map((x,i)=>({...x,id:Date.now()+i,done:false}));save();renderTasks()}
+function renderTasks(){if(!s.activeTasks.length)return draw();let b=document.getElementById('tasks');b.innerHTML='';s.activeTasks.forEach(t=>{let r=document.createElement('div');r.className='task'+(t.done?' done':'');r.innerHTML='<button class="check">'+(t.done?'✓':'')+'</button><div class="task-main"><div class="task-name">'+esc(t.name)+'</div><div class="task-meta">完成后获得经验</div></div><div class="xp">+'+t.xp+' XP</div>';r.querySelector('.check').onclick=()=>{if(t.done)return;t.done=true;xp(t.xp);renderTasks()};b.appendChild(r)});let d=s.activeTasks.filter(x=>x.done).length;document.getElementById('taskSummary').textContent='今日完成 '+d+' / '+s.activeTasks.length+' 个任务'+(d===3?' · 🎉 今日全勤！':'')}
+function record(){let d=+document.getElementById('distance').value,t=+document.getElementById('duration').value,w=+document.getElementById('swolf').value,p=document.getElementById('pace').value.trim();if(!d||!t)return alert('请至少填写距离和有效时间。');let r={date:new Date().toISOString(),distance:d,duration:t,swolf:w||null,pace:p,paceSec:sec(p)},old=s.records.slice();s.records.push(r);let msg='已记录：'+d+'m · '+t+'min';if(w){let x=old.filter(a=>a.swolf).map(a=>a.swolf);if(x.length&&w<Math.min(...x))msg+='\n\n🏆 新纪录！最佳 SWOLF：'+w}xp(old.length?10:30);check();['distance','duration','swolf','pace'].forEach(id=>document.getElementById(id).value='');document.getElementById('recordNotice').innerHTML='<div class="notice">✓ '+esc(msg).replaceAll('\n','<br>')+'</div>'}
+function check(){let newly=[];let r=s.records;let tests={first:r.length>=1,km:r.some(x=>x.distance>=1000),five:r.length>=5,ten:r.length>=10,swolf:r.length>=2&&r.some((x,i)=>i>0&&x.swolf&&r.slice(0,i).filter(y=>y.swolf).some(y=>x.swolf<y.swolf)),distance:r.length>=2&&r.some((x,i)=>i>0&&x.distance>Math.max(...r.slice(0,i).map(y=>y.distance))),pace:r.filter(x=>x.paceSec).length>=2&&r.some((x,i)=>i>0&&x.paceSec&&r.slice(0,i).filter(y=>y.paceSec).some(y=>x.paceSec<y.paceSec)),explore:s.explorations.length>=3};defs.forEach(a=>{if(tests[a[0]]&&!s.unlocked.includes('A:'+a[0])){s.unlocked.push('A:'+a[0]);newly.push(a[2])}});if(newly.length){s.xp+=40*newly.length;setTimeout(()=>alert('🏆 成就解锁！\n\n'+newly.join('\n')+'\n\n+'+(40*newly.length)+' XP'),80)}save();render()}
+function explore(){let v=document.getElementById('exploreText').value.trim();if(!v)return alert('写下一点今天学到或尝试的东西吧。');s.explorations.push({date:new Date().toISOString(),text:v});document.getElementById('exploreText').value='';xp(30);check();document.getElementById('exploreNotice').innerHTML='<div class="notice">✨ 已记录探索：+30 XP</div>'}
+function render(){let l=lv(),i=s.xp%100;document.getElementById('level').textContent=l;document.getElementById('xpText').textContent=i+' / 100 XP';document.getElementById('xpBar').style.width=i+'%';let q=rewards.find(x=>x[1]>l);document.getElementById('nextReward').textContent=q?'下一等级奖励：'+q[0]+'（Lv.'+q[1]+'）':'你已经接近传奇！';let sw=s.records.filter(x=>x.swolf).map(x=>x.swolf),ds=s.records.map(x=>x.distance),ps=s.records.filter(x=>x.paceSec).map(x=>x.paceSec);document.getElementById('bestSwolf').textContent=sw.length?Math.min(...sw):'—';document.getElementById('bestDistance').textContent=ds.length?Math.max(...ds)+'m':'—';document.getElementById('bestPace').textContent=ps.length?pace(Math.min(...ps)):'—';document.getElementById('recordCount').textContent=s.records.length;document.getElementById('avatar').textContent=s.unlocked.includes('🕶️ 新泳镜')?'😎':s.unlocked.includes('🧢 新泳帽')?'🧢':'🧑';document.getElementById('characterAvatar').textContent=l>=7?'🧑‍🚀':l>=5?'🧑‍🎓':l>=3?'😎':'🧑';document.getElementById('equipment').innerHTML=rewards.map(x=>{let ok=l>=x[1];return'<span class="item '+(ok?'unlocked':'')+'">'+x[0]+(ok?' ✓':' 🔒')+'</span>'}).join('');renderTasks();renderAch()}
+function renderAch(){let u=defs.filter(x=>s.unlocked.includes('A:'+x[0])).length;document.getElementById('achCount').textContent=u+' / '+defs.length;document.getElementById('achievements').innerHTML=defs.map(x=>{let ok=s.unlocked.includes('A:'+x[0]);return'<div class="achievement '+(ok?'':'locked')+'"><div class="ach-icon">'+x[1]+'</div><div><b>'+x[2]+'</b><div class="small">'+x[3]+(ok?' · 已解锁':' · 未解锁')+'</div></div></div>'}).join('')}
+function editor(){let b=document.getElementById('taskEditor');b.innerHTML='';s.tasks.forEach((x,i)=>{let r=document.createElement('div');r.className='task-editor';r.innerHTML='<input class="tn" value="'+esc(x.name)+'"><input class="tx" type="number" min="1" value="'+x.xp+'"><button class="icon-btn">×</button>';r.querySelector('button').onclick=()=>{s.tasks.splice(i,1);editor()};b.appendChild(r)})}
+document.getElementById('rerollBtn').onclick=()=>{if(confirm('确定重新抽取今天的3个任务吗？未完成任务会被替换。'))draw()};document.getElementById('saveRecord').onclick=record;document.getElementById('saveExplore').onclick=explore;document.getElementById('editTasksBtn').onclick=()=>{editor();document.getElementById('taskModal').classList.add('show')};document.getElementById('closeModal').onclick=()=>document.getElementById('taskModal').classList.remove('show');document.getElementById('addTask').onclick=()=>{s.tasks.push({name:'新任务',xp:20});editor()};document.getElementById('saveTasks').onclick=()=>{let rows=[...document.querySelectorAll('.task-editor')];if(rows.length<3)return alert('至少保留3个任务。');s.tasks=rows.map(r=>({name:r.querySelector('.tn').value.trim()||'未命名任务',xp:+r.querySelector('.tx').value||20}));save();draw();document.getElementById('taskModal').classList.remove('show')};render();
+</script></body></html>
